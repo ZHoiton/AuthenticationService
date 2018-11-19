@@ -4,10 +4,56 @@ const fs = require("fs");
 const body_parser = require("body-parser");
 const multer = require("multer");
 const upload = multer();
+const cron = require("cron").CronJob;
+const bcrypt = require("bcrypt");
+const Sequelize = require("sequelize");
+const validator = require('validator');
+
+const sequelize = new Sequelize("auth_service", "root", "", {
+	host: "localhost",
+	dialect: "mysql",
+	operatorsAliases: false,
+	pool: {
+		max: 5,
+		min: 0,
+		idle: 10000
+	}
+});
+
+const Users = sequelize.define(
+	"users",
+	{
+		id: {
+			type: Sequelize.INTEGER,
+			autoIncrement: true,
+			primaryKey: true
+		},
+		first_name: {
+			type: Sequelize.STRING
+		},
+		last_name: {
+			type: Sequelize.STRING
+		},
+		email: {
+			type: Sequelize.STRING,
+			validate: {
+				isEmail: true
+			}
+		},
+		password: {
+			type: Sequelize.STRING
+		}
+	},
+	{
+		freezeTableName: true // Model tableName will be the same as the model name
+	}
+);
 
 const app = express();
-//app.use(body_parser()); is depricated
 
+let key = generateSignKey();
+
+//app.use(body_parser()); is depricated
 // parse application/x-www-form-urlencoded
 app.use(body_parser.urlencoded({ extended: false }));
 
@@ -18,22 +64,36 @@ app.use(body_parser.json());
 app.use(upload.array());
 app.use(express.static("public"));
 
-const key = "NAoIZKEeWeL0hsv1x8mPJCYvXVgRt8mHrs5tyws4whxMeybm9m7Fb9b66B7D";
+app.get("/", (request, responce) => {});
 
-app.get("/", (request, responce) => {
-	responce.json({
-		message: "index"
+//test register
+app.post("/register", (request, responce) => {
+	Users.findOrCreate({
+		where: { email: "asd1@asd.com" },
+		defaults: { first_name: "use1", last_name: "las1", password: "asdqawf" }
+	}).spread(function(user, created) {
+		console.log(
+			user.get({
+				plain: true
+			})
+		);
+		console.log(created);
 	});
 });
 
 app.post("/generate", extractUser, (request, responce) => {
-	jwt.sign({ user: request.user }, key, (error, token) => {
-		if (error) {
-			logError({ function: "jwt.sign", error: error });
-			responce.sendStatus(403);
+	jwt.sign(
+		{ user: request.user },
+		key,
+		{ algorithm: "ES256", expiresIn: "1d" },
+		(error, token) => {
+			if (error) {
+				logError({ function: "jwt.sign", error: error });
+				responce.sendStatus(403);
+			}
+			responce.json({ token: token });
 		}
-		responce.json({ token: token });
-	});
+	);
 });
 
 app.post("/verify", verifyToken, (request, responce) => {
@@ -115,6 +175,32 @@ function logError(error) {
 	const line = timestamp + ": " + JSON.stringify(error) + "\r\n";
 	fs.appendFile("log.txt", line, function(error_write, data) {});
 }
+
+/**
+ * generating new secret key to sign all the tokens with
+ */
+function generateSignKey() {
+	let key = "";
+	const date = new Date().getTime();
+	const char_list =
+		"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()_+/?.,<>";
+
+	for (var i = 0; i < 250; i++) {
+		key += char_list.charAt(Math.floor(Math.random() * char_list.length));
+	}
+	return key + date;
+}
+
+//running a cronjob every day at 00:00 to generate new key
+new cron(
+	"0 0 0 * * *",
+	function() {
+		key = generateSignKey();
+	},
+	null,
+	true,
+	"Europe/Amsterdam"
+);
 
 app.listen(5001, () => {
 	console.log("Auth service running...");

@@ -1,0 +1,16 @@
+{
+	"local": {
+		"driver": "mysql",
+		"host": "localhost",
+		"user": "root",
+		"password": "",
+		"database": "auth_service"
+	},
+	"dev": {
+		"driver": "mysql",
+		"host": "localhost",
+		"user": "root",
+		"password": "",
+		"database": "auth_service"
+	}
+}
