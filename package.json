@@ -1,0 +1,30 @@
+{
+  "name": "auth_service",
+  "version": "0.0.1",
+  "description": "JWT Auth service",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ZHoiton/AuthenticationService.git"
+  },
+  "keywords": [
+    "JWT",
+    "AUTH",
+    "SERVICE"
+  ],
+  "author": "K Volodiev",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ZHoiton/AuthenticationService/issues"
+  },
+  "homepage": "https://github.com/ZHoiton/AuthenticationService#readme",
+  "dependencies": {
+    "body-parser": "^1.18.3",
+    "express": "^4.16.4",
+    "jsonwebtoken": "^8.4.0",
+    "multer": "^1.4.1"
+  }
+}
