@@ -6,7 +6,8 @@ const blacklist_sequence = "[\\\"<>=;:'`~,/?{}[]|()*&^%$#!]";
 module.exports = {
     register,
     login,
-    verifyToken: verifyToken
+    verifyToken,
+    activate
 };
 
 function register(request, responce, next) {
@@ -117,3 +118,30 @@ function verifyToken(request, responce, next) {
         responce.sendStatus(403);
     }
 }
+
+function activate(request, responce, next) {
+    const blacklist = "\\\"=<>;";
+    //checking if there are the necessary credentials in the body
+    const required_keys = ["activation_code"];
+
+    const has_error = false;
+
+    for (const key of required_keys) {
+        if (!has_error && request.body[key]) {
+            if (!validator.isEmpty(request.body[key])) {
+                request.body[key] = validator.blacklist(request.body[key], blacklist);
+            } else {
+                responce.status(400).send({ error: "empty param", field: key });
+                has_error = true;
+                break;
+            }
+        } else {
+            responce.status(400).send({ error: "missing param", field: key });
+            has_error = true;
+            break;
+        }
+    }
+
+    if (!has_error) {
+        next();
+    }}

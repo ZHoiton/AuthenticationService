@@ -15,20 +15,17 @@ exports.setup = function(options, seedLink) {
 };
 
 exports.up = function(db) {
-    return db.createTable("users", {
+    return db.createTable("activations", {
         id: { type: "int", primaryKey: true, autoIncrement: true },
-        first_name: "string",
-        last_name: "string",
-        email: "string",
-        password: "string",
-        activated: "boolean",
+        user_id: "int",
+        activation_code: "string",
         createdAt: "timestamp",
         updatedAt: "timestamp"
     });
 };
 
 exports.down = function(db) {
-    return db.dropTable("users");
+    return db.dropTable("activations");
 };
 
 exports._meta = {
