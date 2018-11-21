@@ -16,7 +16,6 @@ function register(request, responce, next) {
 	let has_error = false;
 
 	for (const key of required_keys) {
-		console.log("qwe:" + request.body[key]);
 		if (request.body[key] && !has_error) {
 			if (!validator.isEmpty(request.body[key])) {
 				request.body[key] = validator.blacklist(
@@ -25,12 +24,25 @@ function register(request, responce, next) {
 				);
 				if (key === "email") {
 					if (!validator.isEmail(request.body[key])) {
-						responce
-							.status(400)
-							.send({
-								error: "email param not an email",
-								field: key
-							});
+						responce.status(400).send({
+							error: "email param not an email",
+							field: key
+						});
+						has_error = true;
+						break;
+					}
+				}
+				if (key === "password") {
+					const regex = new RegExp("([a-zA-Z][0-9]|[0-9][a-zA-z])");
+					const regex_length = new RegExp(".{8,100}");
+					if (
+						!regex.test(request.body[key]) ||
+						!regex_length.test(request.body[key])
+					) {
+						responce.status(400).send({
+							error: "insufficient password complexity",
+							field: key
+						});
 						has_error = true;
 						break;
 					}
