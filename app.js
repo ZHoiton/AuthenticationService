@@ -162,7 +162,7 @@ app.post("/activate", middleware.activate, (request, responce) => {
 	});
 });
 
-app.post("/password/new", middleware.resetPasswordNew, function(
+app.post("/password/link", middleware.resetPasswordNew, function(
 	request,
 	responce
 ) {
