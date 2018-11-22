@@ -1,11 +1,13 @@
 const Sequelize = require("sequelize");
 const UsersModel = require("./models/users");
 const ActivationsModel = require("./models/activations");
+const ResetsModel = require("./models/resets");
 
 module.exports = {
 	models: {
 		Users,
-		Activations
+		Activations,
+		Resets
 	}
 };
 
@@ -26,4 +28,7 @@ function Users() {
 
 function Activations() {
 	return new ActivationsModel(sequelize);
+}
+function Resets() {
+	return new ResetsModel(sequelize);
 }

@@ -10,10 +10,11 @@ const middleware = require("./middleware/middleware");
 const db = require("./database/database");
 const Users = new db.models.Users();
 const Activations = new db.models.Activations();
+const Resets = new db.models.Resets();
 
 const app = express();
 
-let key = generateRandom(250);
+let key = generateRandom(250, true);
 
 //app.use(body_parser()); is depricated
 // parse application/x-www-form-urlencoded
@@ -44,7 +45,7 @@ app.post("/register", middleware.register, (request, responce) => {
 			//creating an activation code which could be used in email confrm.
 			Activations.create({
 				user_id: user.get().id,
-				activation_code: generateRandom(100)
+				activation_code: generateRandom(100, false)
 			}).then(activation => {
 				if (activation !== null) {
 					// returning the code if everything went as planed
@@ -52,13 +53,14 @@ app.post("/register", middleware.register, (request, responce) => {
 						activation_code: activation.activation_code
 					});
 				} else {
-					responce
-						.status(400)
-						.send({ error: "Could not generate activation_code" });
+					responce.status(400).send({
+						error: "activation_code",
+						info: "Could not generate."
+					});
 				}
 			});
 		} else {
-			responce.json({ message: "already excists" });
+			responce.json({ error: "user", info: "exists" });
 		}
 	});
 });
@@ -75,7 +77,7 @@ app.post("/login", middleware.login, (request, responce) => {
 					if (error_hash) {
 						responce
 							.status(400)
-							.send({ error: "could not de-hash the password" });
+							.send({ error: "password", info: "de-hash" });
 					} else {
 						if (result_hash) {
 							//deleting the following keys because could not find in the
@@ -87,7 +89,7 @@ app.post("/login", middleware.login, (request, responce) => {
 								if (error) {
 									responce
 										.status(400)
-										.send({ error: "could not sign JWT" });
+										.send({ error: "JWT", info: "sign" });
 								} else {
 									responce.json({
 										user: user.get({ plain: true }),
@@ -98,15 +100,17 @@ app.post("/login", middleware.login, (request, responce) => {
 						} else {
 							responce
 								.status(400)
-								.send({ error: "incorect password" });
+								.send({ error: "password", info: "incorect" });
 						}
 					}
 				});
 			} else {
-				responce.status(400).send({ error: "email not confirmed" });
+				responce
+					.status(400)
+					.send({ error: "email", info: "confirmation" });
 			}
 		} else {
-			responce.status(400).send({ error: "No such user" });
+			responce.status(400).send({ error: "user", info: "no_match" });
 		}
 	});
 });
@@ -114,7 +118,7 @@ app.post("/login", middleware.login, (request, responce) => {
 app.post("/verify", middleware.verifyToken, (request, responce) => {
 	jwt.verify(request.token, key, (error, token_data) => {
 		if (error) {
-			responce.status(400).send({ error: "could not verify JWT" });
+			responce.status(400).send({ error: "JWT", info: "verification" });
 		} else {
 			responce.json({
 				data: token_data
@@ -125,7 +129,7 @@ app.post("/verify", middleware.verifyToken, (request, responce) => {
 
 app.post("/activate", middleware.activate, (request, responce) => {
 	Activations.findOne({
-		where: { activation_code: request.body.activation_code }
+		where: { activation_code: request.query.activation_code }
 	}).then(activation => {
 		if (activation !== null) {
 			Users.findOne({ where: { id: activation.user_id } }).then(user => {
@@ -133,19 +137,91 @@ app.post("/activate", middleware.activate, (request, responce) => {
 					user.update({
 						activated: 1
 					}).then(() => {
-						responce.json({
-							activated: true,
-							redirect: "/login"
+						Activations.destroy({
+							where: {
+								activation_code: request.query.activation_code
+							}
+						}).then(() => {
+							responce.json({
+								activated: true,
+								redirect: "/login"
+							});
 						});
 					});
 				} else {
 					responce
 						.status(400)
-						.send({ error: "user already activated" });
+						.send({ error: "user", info: "activated" });
 				}
 			});
 		} else {
-			responce.status(400).send({ error: "invalid activation key" });
+			responce
+				.status(400)
+				.send({ error: "activation_key", info: "invalid" });
+		}
+	});
+});
+
+app.post("/password/new", middleware.resetPasswordNew, function(
+	request,
+	responce
+) {
+	Users.findOne({
+		where: { email: request.body.email, activated: true }
+	}).then(user => {
+		// project will be the first entry of the Projects table with the title 'aProject' || null
+		if (user !== null) {
+			Resets.create({
+				user_id: user.id,
+				reset_code: generateRandom(100, false)
+			}).then(reset => {
+				if (reset !== null) {
+					// returning the code if everything went as planed
+					responce.json({
+						reset_code: reset.reset_code
+					});
+				} else {
+					responce
+						.status(400)
+						.send({ error: "reset_code", info: "generation" });
+				}
+			});
+		} else {
+			responce.status(400).send({
+				error: "user",
+				info: { case_1: "!exists", case_2: "!acitvated" }
+			});
+		}
+	});
+});
+
+app.post("/password/reset", middleware.resetPassword, function(
+	request,
+	responce
+) {
+	Resets.findOne({
+		where: { reset_code: request.query.reset_code }
+	}).then(reset => {
+		// project will be the first entry of the Projects table with the title 'aProject' || null
+		if (reset !== null) {
+			Users.findOne({ where: { id: reset.user_id } }).then(user => {
+				user.update({
+					password: request.body.new_password
+				}).then(() => {
+					Resets.destroy({
+						where: {
+							reset_code: request.query.reset_code
+						}
+					}).then(() => {
+						responce.json({
+							reset: true,
+							redirect: "/login"
+						});
+					});
+				});
+			});
+		} else {
+			responce.status(400).send({ error: "reset_code", info: "!exists" });
 		}
 	});
 });
@@ -153,11 +229,15 @@ app.post("/activate", middleware.activate, (request, responce) => {
 /**
  * generating new secret key to sign all the tokens with
  */
-function generateRandom(length) {
+function generateRandom(length, include_special) {
 	let key = "";
 	const date = new Date().getTime();
-	const char_list =
-		"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%";
+	let char_list =
+		"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+	if (include_special) {
+		char_list =
+			"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%";
+	}
 
 	for (var i = 0; i < length; i++) {
 		key += char_list.charAt(Math.floor(Math.random() * char_list.length));
@@ -169,7 +249,7 @@ function generateRandom(length) {
 new cron(
 	"0 0 0 * * *",
 	function() {
-		key = generateRandom(250);
+		key = generateRandom(250, true);
 	},
 	null,
 	true,
