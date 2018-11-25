@@ -50,6 +50,7 @@ app.post("/register", middleware.register, (request, responce) => {
 				if (activation !== null) {
 					// returning the code if everything went as planed
 					responce.json({
+						user_email: user.email,
 						activation_code: activation.activation_code
 					});
 				} else {
@@ -60,7 +61,10 @@ app.post("/register", middleware.register, (request, responce) => {
 				}
 			});
 		} else {
-			responce.json({ error: "user", info: "exists" });
+			responce.status(400).send({
+				error: "user",
+				info: "exists"
+			});
 		}
 	});
 });
@@ -127,7 +131,7 @@ app.post("/verify", middleware.verifyToken, (request, responce) => {
 	});
 });
 
-app.post("/activate", middleware.activate, (request, responce) => {
+app.get("/activate", middleware.activate, (request, responce) => {
 	Activations.findOne({
 		where: { activation_code: request.query.activation_code }
 	}).then(activation => {
@@ -178,6 +182,7 @@ app.post("/password/link", middleware.resetPasswordNew, function(
 				if (reset !== null) {
 					// returning the code if everything went as planed
 					responce.json({
+						user_email: user.email,
 						reset_code: reset.reset_code
 					});
 				} else {
