@@ -226,17 +226,24 @@ function activate(request, responce, next) {
 }
 function resetPasswordNew(request, responce, next) {
 	//checking if there are the necessary credentials in the body
-	const required_keys = ["email"];
+	const required_keys = ["email", "register_link"];
 
 	const has_error = false;
 
 	for (const key of required_keys) {
 		if (!has_error && request.body[key]) {
 			if (!validator.isEmpty(request.body[key])) {
-				request.body[key] = validator.blacklist(
-					request.body[key],
-					blacklist_sequence
-				);
+				if (key === "register_link") {
+					request.body[key] = validator.blacklist(
+						request.body[key],
+						"[\\\"<>'`~,{}[]|()*^%$#!]"
+					);
+				} else {
+					request.body[key] = validator.blacklist(
+						request.body[key],
+						blacklist_sequence
+					);
+				}
 			} else {
 				responce.status(400).send({
 					error: "parameter",
@@ -264,17 +271,28 @@ function resetPasswordNew(request, responce, next) {
 
 function resetPassword(request, responce, next) {
 	//checking if there are the necessary credentials in the body
-	const required_keys = ["new_password", "new_password_confirm"];
+	const required_keys = [
+		"new_password",
+		"new_password_confirm",
+		"redirect_link"
+	];
 
 	let has_error = false;
 
 	for (const key of required_keys) {
 		if (!has_error && request.body[key]) {
 			if (!validator.isEmpty(request.body[key])) {
-				request.body[key] = validator.blacklist(
-					request.body[key],
-					blacklist_sequence
-				);
+				if (key === "redirect_link") {
+					request.body[key] = validator.blacklist(
+						request.body[key],
+						"[\\\"<>'`~,{}[]|()*^%$#!]"
+					);
+				} else {
+					request.body[key] = validator.blacklist(
+						request.body[key],
+						blacklist_sequence
+					);
+				}
 				if (key === "new_password") {
 					const regex = new RegExp("([a-zA-Z][0-9]|[0-9][a-zA-z])");
 					const regex_length = new RegExp(".{8,100}");

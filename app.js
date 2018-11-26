@@ -154,23 +154,19 @@ app.post("/activate", middleware.activate, (request, responce) => {
 						});
 					});
 				} else {
-					responce
-						.status(400)
-						.send({
-							error: "user",
-							info: "activated",
-							redirect_link: request.query.redirect_link
-						});
+					responce.status(400).send({
+						error: "user",
+						info: "activated",
+						redirect_link: request.query.redirect_link
+					});
 				}
 			});
 		} else {
-			responce
-				.status(400)
-				.send({
-					error: "activation_key",
-					info: "invalid",
-					redirect_link: request.query.redirect_link
-				});
+			responce.status(400).send({
+				error: "activation_key",
+				info: "invalid",
+				redirect_link: request.query.redirect_link
+			});
 		}
 	});
 });
@@ -192,6 +188,7 @@ app.post("/password/link", middleware.resetPasswordNew, function(
 					// returning the code if everything went as planed
 					responce.json({
 						user_email: user.email,
+						register_link: request.body.register_link,
 						reset_code: reset.reset_code
 					});
 				} else {
@@ -229,7 +226,7 @@ app.post("/password/reset", middleware.resetPassword, function(
 					}).then(() => {
 						responce.json({
 							reset: true,
-							redirect: "/login"
+							redirect_link: request.query.redirect_link
 						});
 					});
 				});
