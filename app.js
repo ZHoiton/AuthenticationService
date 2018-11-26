@@ -51,7 +51,8 @@ app.post("/register", middleware.register, (request, responce) => {
 					// returning the code if everything went as planed
 					responce.json({
 						user_email: user.email,
-						activation_code: activation.activation_code
+						activation_code: activation.activation_code,
+						redirect_link: request.body.redirect_link
 					});
 				} else {
 					responce.status(400).send({
@@ -131,7 +132,7 @@ app.post("/verify", middleware.verifyToken, (request, responce) => {
 	});
 });
 
-app.get("/activate", middleware.activate, (request, responce) => {
+app.post("/activate", middleware.activate, (request, responce) => {
 	Activations.findOne({
 		where: { activation_code: request.query.activation_code }
 	}).then(activation => {
@@ -148,20 +149,28 @@ app.get("/activate", middleware.activate, (request, responce) => {
 						}).then(() => {
 							responce.json({
 								activated: true,
-								redirect: "/login"
+								redirect_link: request.query.redirect_link
 							});
 						});
 					});
 				} else {
 					responce
 						.status(400)
-						.send({ error: "user", info: "activated" });
+						.send({
+							error: "user",
+							info: "activated",
+							redirect_link: request.query.redirect_link
+						});
 				}
 			});
 		} else {
 			responce
 				.status(400)
-				.send({ error: "activation_key", info: "invalid" });
+				.send({
+					error: "activation_key",
+					info: "invalid",
+					redirect_link: request.query.redirect_link
+				});
 		}
 	});
 });

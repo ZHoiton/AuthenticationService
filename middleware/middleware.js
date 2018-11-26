@@ -13,17 +13,31 @@ module.exports = {
 };
 
 function register(request, responce, next) {
-	const required_keys = ["first_name", "last_name", "password", "email"];
+	const required_keys = [
+		"first_name",
+		"last_name",
+		"password",
+		"email",
+		"redirect_link"
+	];
 
 	let has_error = false;
 
 	for (const key of required_keys) {
 		if (request.body[key] && !has_error) {
 			if (!validator.isEmpty(request.body[key])) {
-				request.body[key] = validator.blacklist(
-					request.body[key],
-					blacklist_sequence
-				);
+				if (key === "redirect_link") {
+					request.body[key] = validator.blacklist(
+						request.body[key],
+						"[\\\"<>'`~,{}[]|()*^%$#!]"
+					);
+				} else {
+					request.body[key] = validator.blacklist(
+						request.body[key],
+						blacklist_sequence
+					);
+				}
+
 				if (key === "email") {
 					if (!validator.isEmail(request.body[key])) {
 						responce.status(400).send({
@@ -168,18 +182,24 @@ function verifyToken(request, responce, next) {
 
 function activate(request, responce, next) {
 	//checking if there are the necessary credentials in the body
-	const required_keys = ["activation_code"];
+	const required_keys = ["activation_code", "redirect_link"];
 
 	const has_error = false;
-	console.log(request.query["activation_code"]);
 
 	for (const key of required_keys) {
 		if (!has_error && request.query[key]) {
 			if (!validator.isEmpty(request.query[key])) {
-				request.query[key] = validator.blacklist(
-					request.query[key],
-					blacklist_sequence
-				);
+				if (key === "redirect_link") {
+					request.query[key] = validator.blacklist(
+						request.query[key],
+						"[\\\"<>'`~,{}[]|()*^%$#!]"
+					);
+				} else {
+					request.query[key] = validator.blacklist(
+						request.query[key],
+						blacklist_sequence
+					);
+				}
 			} else {
 				responce.status(400).send({
 					error: "parameter",
