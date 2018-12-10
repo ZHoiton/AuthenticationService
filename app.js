@@ -7,6 +7,7 @@ const cors = require("cors");
 
 const middleware = require("./middlewares/middleware");
 const auth = require("./app/controllers/authController");
+//called to initialize the cronjob
 const resetKey = require("./app/jobs/resetKeyJob");
 
 const app = express();
