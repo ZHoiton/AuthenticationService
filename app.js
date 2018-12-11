@@ -12,21 +12,25 @@ const resetKey = require("./app/jobs/resetKeyJob");
 
 const app = express();
 
+//disabling the header due to some vulnerabilities by which a hacker can abuse the service, 
+//as it will give away on what the service is running on
 app.disable("x-powered-by");
 
+//cors to tighten up the allowed incoming requests
 app.use(
 	cors({
 		optionsSuccessStatus: 200,
+		// origin: '<gateway_service_domain>',
 		methods: ["POST"],
 		allowedHeaders: ["Content-Type", "Authorization"],
 		preflightContinue: false
 	})
 );
-//app.use(body_parser()); is deprecated
-// parse application/x-www-form-urlencoded
+
+// for parsing application/x-www-form-urlencoded
 app.use(body_parser.urlencoded({ extended: false }));
 
-// parse application/json
+// for parsing application/json
 app.use(body_parser.json());
 
 // for parsing multipart/form-data
