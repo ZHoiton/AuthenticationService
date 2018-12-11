@@ -18,7 +18,7 @@ function link(request, response) {
 				reset_code: generateRandom(100, false)
 			}).then(reset => {
 				if (reset !== null) {
-					// returning the code if everything went as planed
+					// returning the reset code if everything went as planed
 					response.json({
 						user_email: user.email,
 						register_link: request.body.register_link,
@@ -33,7 +33,7 @@ function link(request, response) {
 		} else {
 			response.status(400).send({
 				error: "user",
-				info: { case_1: "!exists", case_2: "!acitvated" }
+				info: { case_1: "!exists", case_2: "!activated" }
 			});
 		}
 	});

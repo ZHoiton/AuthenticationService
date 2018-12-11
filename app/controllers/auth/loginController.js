@@ -9,7 +9,6 @@ module.exports = {
 
 function login(request, response, key) {
 	Users.findOne({ where: { email: request.body.email } }).then(user => {
-		// project will be the first entry of the Projects table with the title 'aProject' || null
 		if (user !== null) {
 			if (user.activated) {
 				bcrypt.compare(request.body.password, user.password, function(
@@ -42,14 +41,14 @@ function login(request, response, key) {
 						} else {
 							response
 								.status(400)
-								.send({ error: "password", info: "incorect" });
+								.send({ error: "user", info: "incorrect password" });
 						}
 					}
 				});
 			} else {
 				response
 					.status(400)
-					.send({ error: "email", info: "confirmation" });
+					.send({ error: "user", info: "not activated" });
 			}
 		} else {
 			response.status(400).send({ error: "user", info: "no_match" });

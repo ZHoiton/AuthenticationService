@@ -37,7 +37,7 @@ function activate(request, response) {
 			});
 		} else {
 			response.status(400).send({
-				error: "activation_key",
+				error: "activation_code",
 				info: "invalid",
 				redirect_link: request.query.redirect_link
 			});
