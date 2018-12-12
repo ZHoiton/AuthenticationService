@@ -1,6 +1,7 @@
 const db = require("./../../../database/database");
 const Users = new db.models.Users();
 const Resets = new db.models.Resets();
+const key_generator = require("./../keyController");
 
 module.exports = {
 	link,
@@ -15,14 +16,16 @@ function link(request, response) {
 		if (user !== null) {
 			Resets.create({
 				user_id: user.id,
-				reset_code: generateRandom(100, false)
+				reset_code: key_generator.generateToken()
 			}).then(reset => {
 				if (reset !== null) {
 					// returning the reset code if everything went as planed
 					response.json({
 						user_email: user.email,
-						register_link: request.body.register_link,
-						reset_code: reset.reset_code
+						register_link:
+							request.body.register_link +
+							"?reset_code=" +
+							reset.reset_code
 					});
 				} else {
 					response
@@ -55,8 +58,7 @@ function reset(request, response) {
 						}
 					}).then(() => {
 						response.json({
-							reset: true,
-							redirect_link: request.query.redirect_link
+							reset: true
 						});
 					});
 				});

@@ -9,11 +9,6 @@ const input_params = [
 		name: "activation_code",
 		type: validationMiddleware.type.field,
 		scope: validationMiddleware.scope.query
-	},
-	{
-		name: "redirect_link",
-		type: validationMiddleware.type.link,
-		scope: validationMiddleware.scope.query
 	}
 ];
 

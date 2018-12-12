@@ -1,6 +1,7 @@
 module.exports = {
 	getKey,
-	generate
+	generate,
+	generateToken
 };
 
 let global_key = "";
@@ -27,4 +28,16 @@ function generate(length, include_special) {
 		key += char_list.charAt(Math.floor(Math.random() * char_list.length));
 	}
 	global_key = key + date;
+}
+
+function generateToken() {
+	let key = "";
+	const date = new Date().getTime();
+	let char_list =
+		"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+	const length = 100;
+	for (var i = 0; i < length; i++) {
+		key += char_list.charAt(Math.floor(Math.random() * char_list.length));
+	}
+	return key + date;
 }

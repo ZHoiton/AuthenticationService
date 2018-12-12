@@ -6,7 +6,8 @@
     "scripts": {
         "test": "echo \"Error: no test specified\" && exit 1",
         "db-up": "node node_modules/db-migrate/bin/db-migrate up",
-        "db-down": "node node_modules/db-migrate/bin/db-migrate down"
+        "db-down": "node node_modules/db-migrate/bin/db-migrate down",
+        "db-reset": "node node_modules/db-migrate/bin/db-migrate reset"
     },
     "repository": {
         "type": "git",

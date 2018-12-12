@@ -33,7 +33,7 @@ function login(request, response, key) {
 										.send({ error: "JWT", info: "sign" });
 								} else {
 									response.json({
-										user: user.get({ plain: true }),
+										// user: user.get({ plain: true }),
 										token: token
 									});
 								}

@@ -22,24 +22,21 @@ function activate(request, response) {
 							}
 						}).then(() => {
 							response.json({
-								activated: true,
-								redirect_link: request.query.redirect_link
+								activated: true
 							});
 						});
 					});
 				} else {
 					response.status(400).send({
 						error: "user",
-						info: "activated",
-						redirect_link: request.query.redirect_link
+						info: "activated"
 					});
 				}
 			});
 		} else {
 			response.status(400).send({
 				error: "activation_code",
-				info: "invalid",
-				redirect_link: request.query.redirect_link
+				info: "invalid"
 			});
 		}
 	});

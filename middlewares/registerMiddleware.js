@@ -10,16 +10,6 @@ module.exports = {
 
 const input_params = [
 	{
-		name: "first_name",
-		type: validationMiddleware.type.field,
-		scope: validationMiddleware.scope.body
-	},
-	{
-		name: "last_name",
-		type: validationMiddleware.type.field,
-		scope: validationMiddleware.scope.body
-	},
-	{
 		name: "password",
 		type: validationMiddleware.type.password,
 		scope: validationMiddleware.scope.body
@@ -30,7 +20,7 @@ const input_params = [
 		scope: validationMiddleware.scope.body
 	},
 	{
-		name: "redirect_link",
+		name: "activation_link",
 		type: validationMiddleware.type.link,
 		scope: validationMiddleware.scope.body
 	}

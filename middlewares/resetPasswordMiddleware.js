@@ -46,11 +46,6 @@ const input_params_reset = [
 		name: "new_password_confirm",
 		type: validationMiddleware.type.password,
 		scope: validationMiddleware.scope.body
-	},
-	{
-		name: "redirect_link",
-		type: validationMiddleware.type.link,
-		scope: validationMiddleware.scope.body
 	}
 ];
 

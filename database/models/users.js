@@ -11,12 +11,6 @@ function Users(sequelize) {
 				autoIncrement: true,
 				primaryKey: true
 			},
-			first_name: {
-				type: Sequelize.STRING
-			},
-			last_name: {
-				type: Sequelize.STRING
-			},
 			email: {
 				type: Sequelize.STRING,
 				validate: {

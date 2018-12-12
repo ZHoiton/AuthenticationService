@@ -43,11 +43,9 @@ app.use(express.static("public"));
 |================================================================
 */
 /**
- * @param {Request Body} first_name    - first name of the user which is being registered.
- * @param {Request Body} last_name     - last name of the user which is being registered.
- * @param {Request Body} email         - email of the user which is being registered.
- * @param {Request Body} password      - password of the user which is being registered.
- * @param {Request Body} redirect_link - a redirect link which the user will be taken to after the registration is complete.
+ * @param {Request Body} email           - email of the user which is being registered.
+ * @param {Request Body} password        - password of the user which is being registered.
+ * @param {Request Body} activation_link - an activation link which the user needs to visit to activate his/her user.
  */
 app.post("/register", middleware.register, auth.register);
 /**
@@ -94,8 +92,7 @@ app.post("/register", middleware.register, auth.register);
  * @returns {Response Success} - user is created.
  * @example {
  * 				user_email: <email>,
- * 				activation_code: <activation_code>,
- * 				redirect_link: <redirect_link>
+ * 				activation_link: <activation_link>
  * 			}
  */
 
@@ -163,7 +160,6 @@ app.post("/login", middleware.login, auth.login);
  *
  * @returns {Response Success} - user is logged.
  * @example {
- * 				user: <user>,
  * 				token: <token>
  * 			}
  */
@@ -203,7 +199,6 @@ app.post("/verify", middleware.verifyToken, auth.verify);
 */
 /**
  * @param {Request Query} activation_code - activation code associated with the user taken from the /register response.
- * @param {Request Query} redirect_link   - a redirect link to which the user will be taken after activation.
  */
 app.post("/activate", middleware.activate, auth.activate);
 /**
@@ -224,22 +219,19 @@ app.post("/activate", middleware.activate, auth.activate);
  * @returns {Response Error} - if an invalid activation code was passed.
  * @example {
  * 				error: "activation_code",
- * 				info: "invalid",
- * 				redirect_link: <redirect_link>
+ * 				info: "invalid"
  * 			}
  *
  * @returns {Response Error} - if the user associated with the activation code is already activated (impossible to get,
  * 							   because the activation is destroyed after the user is activated).
  * @example {
  * 				error: "user",
- * 				info: "activated",
- * 				redirect_link: <redirect_link>
+ * 				info: "activated"
  * 			}
  *
  * @returns {Response Success} - if everything proceeds as it should.
  * @example {
- * 				activated: true,
- * 				redirect_link: <redirect_link>
+ * 				activated: true
  * 			}
  */
 
@@ -287,8 +279,7 @@ app.post("/password/link", middleware.resetPasswordNew, auth.link);
  * @returns {Response Success} - all the data which is in the token.
  * @example {
  * 				user_email: <email>,
- * 				register_link: <link>,
- * 				reset_code: <code>
+ * 				register_link: <link>
  * 			}
  */
 
@@ -300,7 +291,6 @@ app.post("/password/link", middleware.resetPasswordNew, auth.link);
 /**
  * @param {Request Body} new_password         - the new password the user will be using.
  * @param {Request Body} new_password_confirm - the new password written for a second time, to check if the passwords are matching.
- * @param {Request Body} redirect_link        - a redirect link to which the user will be taken to after the password is reset.
  * @param {Request Query} reset_code          - the reset code associated with the user taken from the '/password/link' response.
  */
 app.post("/password/reset", middleware.resetPassword, auth.reset);
@@ -343,10 +333,9 @@ app.post("/password/reset", middleware.resetPassword, auth.reset);
  * 				info: "!exists"
  * 			}
  *
- * @returns {Response Success} - returns success with @param redirect_link.
+ * @returns {Response Success} - when everything proceeded correctly.
  * @example {
- *				reset: true,
- * 				redirect_link: <redirect_link>
+ *				reset: true
  * 			}
  */
 
