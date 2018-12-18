@@ -39,6 +39,24 @@ app.use(express.static("public"));
 
 /*
 |================================================================
+| Response variants
+|================================================================
+*/
+// for Data Errors
+// 		400 for when the requested information is incomplete or malformed.
+// 		422 for when the requested information is okay, but invalid.
+// 		404 for when everything is okay, but the resource doesn’t exist.
+// 		409 for when a conflict of data exists, even with valid information.
+// for Auth Errors
+// 		401 for when an access token isn’t provided, or is invalid.
+// 		403 for when an access token is valid, but requires more privileges.
+// for Standard Statuses
+// 		200 for when everything is okay.
+// 		204 for when everything is okay, but there’s no content to return.
+// 		500 for when the server throws an error, completely unexpected.
+
+/*
+|================================================================
 | Register route
 |================================================================
 */

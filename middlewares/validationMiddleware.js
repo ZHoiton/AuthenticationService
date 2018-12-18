@@ -46,66 +46,129 @@ module.exports = {
  * @param {Object} input.scope - the scope in which the field should be present at.
  */
 function validate(request, response, inputs) {
-	let has_error = false;
+	if (!areInputsPresent(request, response, inputs)) {
+		return true;
+	}
+	if (!areInputsFilled(request, response, inputs)) {
+		return true;
+	}
+	if (!areInputsValid(request, response, inputs)) {
+		return true;
+	}
 
 	//looping trough all the required inputs in the inputs[]
 	for (const input of inputs) {
-		let request_input = findField(request, input);
+		//sanitize the current field
+		request = sanitizeField(request, input);
+	}
 
-		//checking to see if the input is present and if there is NO error already present
-		if (request_input && !has_error) {
-			//checking to see if the current input is not empty
-			if (!isFieldEmpty(request_input)) {
-				//checking to see if the input is an email, if its applying specific validation
-				if (input.type === type.email) {
-					if (!isEmailValid(request_input)) {
-						response.status(400).send({
-							error: "parameter",
-							field: "email",
-							info: "incorrect email"
-						});
-						has_error = true;
-						break;
-					}
-					//checking to see if the input is an password, if its applying specific validation
-				} else if (input.type === type.password) {
-					if (!isPasswordValid(request_input)) {
-						response.status(400).send({
-							error: "parameter",
-							field: "password",
-							info: "insufficient complexity"
-						});
-						has_error = true;
-						break;
-					}
-					//default validation
-				} else {
-					//sanitize the current field
-					request = sanitizeField(request, input);
-				}
-			} else {
-				//returning response if the input is empty
-				response.status(400).send({
-					error: "parameter",
-					field: input.name,
-					info: "empty"
-				});
-				has_error = true;
-				break;
-			}
-		} else {
-			//returning response if the input is missing
-			response.status(400).send({
-				error: "parameter",
-				field: input.name,
-				info: "missing"
-			});
-			has_error = true;
-			break;
+	return false;
+}
+
+function areInputsPresent(request, response, inputs) {
+	let missing_input = {};
+	//looping trough all the required inputs in the inputs[]
+	for (const input of inputs) {
+		let request_input = findField(request, input);
+		//checking to see if the current input is not empty
+		if (!request_input) {
+			missing_input[input.name] = "Input Missing.";
 		}
 	}
 
-	return has_error;
+	if (!isObjectEmpty(missing_input)) {
+		response.status(400).send({
+			status: "Bad Request",
+			code: 400,
+			messages: [],
+			data: {},
+			error: {
+				status: 400,
+				error: "FIELDS_MISSING_ERROR",
+				description: "One or more fields raised errors.",
+				fields: missing_input
+			}
+		});
+
+		return false;
+	}
+	return true;
+}
+
+function areInputsFilled(request, response, inputs) {
+	let empty_input = {};
+	//looping trough all the required inputs in the inputs[]
+	for (const input of inputs) {
+		let request_input = findField(request, input);
+		//checking to see if the current input is not empty
+		if (isFieldEmpty(request_input)) {
+			empty_input[input.name] = "Input Empty.";
+		}
+	}
+
+	if (!isObjectEmpty(empty_input)) {
+		response.status(400).send({
+			status: "Bad Request",
+			code: 400,
+			messages: [],
+			data: {},
+			error: {
+				status: 400,
+				error: "FIELDS_EMPTY_ERROR",
+				description: "One or more fields raised errors.",
+				fields: empty_input
+			}
+		});
+
+		return false;
+	}
+	return true;
+}
+
+function areInputsValid(request, response, inputs) {
+	let invalid_input = {};
+	//looping trough all the required inputs in the inputs[]
+	for (const input of inputs) {
+		let request_input = findField(request, input);
+		//checking to see if the input is an email, if its applying specific validation
+		if (input.type === type.email) {
+			if (!isEmailValid(request_input)) {
+				invalid_input[input.name] = "Password complexity insufficient.";
+			}
+			//checking to see if the input is an password, if its applying specific validation
+		} else if (input.type === type.password) {
+			if (!isPasswordValid(request_input)) {
+				invalid_input[input.name] = "Invalid email address.";
+			}
+		}
+	}
+
+	if (!isObjectEmpty(invalid_input)) {
+		response.status(422).send({
+			status: "Bad Request",
+			code: 422,
+			messages: [],
+			data: {},
+			error: {
+				status: 422,
+				error: "FIELDS_VALIDATION_ERROR",
+				description: "One or more fields raised validation errors.",
+				fields: invalid_input
+			}
+		});
+
+		return false;
+	}
+	return true;
+}
+
+function isObjectEmpty(object) {
+	for (var key in object) {
+		if (object.hasOwnProperty(key)) {
+			return false;
+		}
+	}
+	return true;
 }
 
 /**
