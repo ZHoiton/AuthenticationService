@@ -133,12 +133,12 @@ function areInputsValid(request, response, inputs) {
 		//checking to see if the input is an email, if its applying specific validation
 		if (input.type === type.email) {
 			if (!isEmailValid(request_input)) {
-				invalid_input[input.name] = "Password complexity insufficient.";
+				invalid_input[input.name] = "Invalid email address.";
 			}
 			//checking to see if the input is an password, if its applying specific validation
 		} else if (input.type === type.password) {
 			if (!isPasswordValid(request_input)) {
-				invalid_input[input.name] = "Invalid email address.";
+				invalid_input[input.name] = "Password complexity insufficient.";
 			}
 		}
 	}

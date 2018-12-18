@@ -41,18 +41,35 @@ function register(request, response, next) {
 		bcrypt.genSalt(salt_rounds, function(error, salt) {
 			if (error) {
 				//if the generating of the password fails return a response
-				response
-					.status(400)
-					.send({ error: "encrypting", info: "generating salt" });
+				response.status(500).send({
+					status: "Internal Server Error",
+					code: 500,
+					messages: [],
+					data: {},
+					error: {
+						status: 500,
+						error: "PASSWORD_ENCRYPTION_ERROR",
+						description: "And error was rased when trying to generate salt for the hashing of the password.",
+						fields: {}
+					}
+				});
 			} else {
 				bcrypt.hash(request.body.password, salt, function(
 					error_hash,
 					hash
 				) {
 					if (error_hash) {
-						response.status(400).send({
-							error: "encrypting",
-							info: "generating hash"
+						response.status(500).send({
+							status: "Internal Server Error",
+							code: 500,
+							messages: [],
+							data: {},
+							error: {
+								status: 500,
+								error: "PASSWORD_ENCRYPTION_ERROR",
+								description: "And error was rased when trying to hash the password.",
+								fields: {}
+							}
 						});
 					} else {
 						//overwrite the password fiend if the request with the new hased one
