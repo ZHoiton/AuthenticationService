@@ -44,7 +44,7 @@ function register(request, response, next) {
 				response.status(500).send({
 					status: "Internal Server Error",
 					code: 500,
-					messages: [],
+					messages: ["server error"],
 					data: {},
 					error: {
 						status: 500,
@@ -62,7 +62,7 @@ function register(request, response, next) {
 						response.status(500).send({
 							status: "Internal Server Error",
 							code: 500,
-							messages: [],
+							messages: ["server error"],
 							data: {},
 							error: {
 								status: 500,

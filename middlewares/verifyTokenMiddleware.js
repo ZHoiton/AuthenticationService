@@ -25,6 +25,18 @@ function verifyToken(request, response, next) {
 		//continue
 		next();
 	} else {
-		response.status(400).send({ error: "header", info: "no token found" });
+		response.status(401).send({
+			status: "Unauthorized",
+			code: 401,
+			messages: ["access token isn’t provided, or is invalid"],
+			data: {},
+			error: {
+				status: 401,
+				error: "AUTHENTICATION_HEADER_ERROR",
+				description:
+					"And error was rased when trying to get the authentication header.",
+				fields: {}
+			}
+		});
 	}
 }

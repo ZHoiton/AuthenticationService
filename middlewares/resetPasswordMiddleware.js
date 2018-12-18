@@ -80,9 +80,18 @@ function resetPassword(request, response, next) {
 			) {
 				bcrypt.genSalt(salt_rounds, function(error, salt) {
 					if (error) {
-						response.status(400).send({
-							error: "encrypting",
-							info: "generating salt"
+						response.status(500).send({
+							status: "Internal Server Error",
+							code: 500,
+							messages: ["server error"],
+							data: {},
+							error: {
+								status: 500,
+								error: "PASSWORD_ENCRYPTION_ERROR",
+								description:
+									"And error was rased when trying to generate salt for the hashing of the password.",
+								fields: {}
+							}
 						});
 					} else {
 						bcrypt.hash(request.body.new_password, salt, function(
@@ -90,9 +99,18 @@ function resetPassword(request, response, next) {
 							hash
 						) {
 							if (error_hash) {
-								response.status(400).send({
-									error: "encrypting",
-									info: "generating hash"
+								response.status(500).send({
+									status: "Internal Server Error",
+									code: 500,
+									messages: ["server error"],
+									data: {},
+									error: {
+										status: 500,
+										error: "PASSWORD_ENCRYPTION_ERROR",
+										description:
+											"And error was rased when trying to hash the password.",
+										fields: {}
+									}
 								});
 							} else {
 								request.body.new_password = hash;
@@ -102,9 +120,24 @@ function resetPassword(request, response, next) {
 					}
 				});
 			} else {
-				response
-					.status(400)
-					.send({ error: "password", info: "no match" });
+				response.status(400).send({
+					status: "Bad Request",
+					code: 400,
+					messages: ["information is incomplete or malformed"],
+					data: {},
+					error: {
+						status: 400,
+						error: "FIELDS_VALIDATION_ERROR",
+						description:
+							"And error was rased when trying to match the new_password and the new_password_confirm.",
+						fields: {
+							new_password:
+								"Does not match with new_password_confirm.",
+							new_password_confirm:
+								"Does not match with new_password."
+						}
+					}
+				});
 			}
 		}
 	}

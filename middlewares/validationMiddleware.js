@@ -80,7 +80,7 @@ function areInputsPresent(request, response, inputs) {
 		response.status(400).send({
 			status: "Bad Request",
 			code: 400,
-			messages: [],
+			messages: ["information is incomplete or malformed"],
 			data: {},
 			error: {
 				status: 400,
@@ -110,7 +110,7 @@ function areInputsFilled(request, response, inputs) {
 		response.status(400).send({
 			status: "Bad Request",
 			code: 400,
-			messages: [],
+			messages: ["information is incomplete or malformed"],
 			data: {},
 			error: {
 				status: 400,
@@ -147,7 +147,7 @@ function areInputsValid(request, response, inputs) {
 		response.status(422).send({
 			status: "Bad Request",
 			code: 422,
-			messages: [],
+			messages: ["information is okay, but invalid"],
 			data: {},
 			error: {
 				status: 422,
