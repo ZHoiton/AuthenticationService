@@ -12,7 +12,7 @@ const resetKey = require("./app/jobs/resetKeyJob");
 
 const app = express();
 
-//disabling the header due to some vulnerabilities by which a hacker can abuse the service, 
+//disabling the header due to some vulnerabilities by which a hacker can abuse the service,
 //as it will give away on what the service is running on
 app.disable("x-powered-by");
 
@@ -69,50 +69,109 @@ app.use(express.static("public"));
 app.post("/register", middleware.register, auth.register);
 /**
  * @returns {Response Error} - if any of the parameters is missing.
- * @example {
- * 				error: "parameter",
- * 				field: <parameter.name>,
- * 				info: "missing"
- * 			}
+ * @example
+ * 		{
+ *			status: "Bad Request",
+ *			code: 400,
+ *			messages: ["information is incomplete or malformed"],
+ *			data: {},
+ *			error: {
+ *				status: 400,
+ *				error: "FIELDS_MISSING_ERROR",
+ *				description: "One or more fields raised errors.",
+ *				fields: <missing_inputs>
+ *			}
+ *		}
  *
  * @returns {Response Error} - if any of the parameters is empty.
- * @example {
- * 				error: "parameter",
- * 				field: <name>,
- * 				info: "empty"
- * 			}
+ * @example
+ * 		{
+ *			status: "Bad Request",
+ *			code: 400,
+ *			messages: ["information is incomplete or malformed"],
+ *			data: {},
+ *			error: {
+ *				status: 400,
+ *				error: "FIELDS_EMPTY_ERROR",
+ *				description: "One or more fields raised errors.",
+ *				fields: <empty_inputs>
+ *			}
+ *		}
  *
  * @returns {Response Error} - if the password complexity is insufficient.
- * @example {
- * 				error: "parameter",
- * 				field: "password",
- * 				info: "insufficient complexity"
- * 			}
+ * @example
+ * 		{
+ *			status: "Bad Request",
+ *			code: 422,
+ *			messages: ["information is okay, but invalid"],
+ *			data: {},
+ *			error: {
+ *				status: 422,
+ *				error: "FIELDS_VALIDATION_ERROR",
+ *				description: "One or more fields raised validation errors.",
+ *				fields: <invalid_inputs>
+ *			}
+ *		}
  *
  * @returns {Response Error} - if the value passed under the email param is faulty.
- * @example {
- * 				error: "parameter",
- * 				field: "email",
- * 				info: "incorrect email"
- * 			}
+ * @example
+ * 		{
+ *			status: "Bad Request",
+ *			code: 422,
+ *			messages: ["information is okay, but invalid"],
+ *			data: {},
+ *			error: {
+ *				status: 422,
+ *				error: "FIELDS_VALIDATION_ERROR",
+ *				description: "One or more fields raised validation errors.",
+ *				fields: <invalid_inputs>
+ *			}
+ *		}
  *
  * @returns {Response Error} - if the user is already registered.
- * @example {
- * 				error: "user",
- * 				info: "exists"
- * 			}
+ * @example
+ * 		{
+ *			status: "Conflict",
+ *			code: 409,
+ *			messages: ["resource already exists"],
+ *			data: {},
+ *			error: {
+ *				status: 409,
+ *				error: "RESOURCE_EXISTS_ERROR",
+ *				description:
+ *					"And error was rased when trying to create a resource which already exists.",
+ *				fields: {}
+ *			}
+ *		}
  *
  * @returns {Response Error} - if there was a problem generating the activation code, a new request can be considered.
- * @example {
- * 				error: "activation_code",
- * 				info: "Could not generate."
- * 			}
+ * @example
+ * 		{
+ *			status: "Internal Server Error",
+ *			code: 500,
+ *			messages: ["server error"],
+ *			data: {},
+ *			error: {
+ *				status: 500,
+ *				error: "SERVER_ERROR",
+ *				description:
+ *					"And error was rased when trying to generate activation code.",
+ *				fields: {}
+ *			}
+ *		}
  *
  * @returns {Response Success} - user is created.
- * @example {
- * 				user_email: <email>,
- * 				activation_link: <activation_link>
- * 			}
+ * @example
+ * 		{
+ *			status: "ok",
+ *			code: 200,
+ *			messages: [],
+ *			data: {
+ *				user_email: user.email,
+ *				activation_link: <activation_link>
+ *			},
+ *			error: {}
+ *		}
  */
 
 /*
@@ -127,60 +186,139 @@ app.post("/register", middleware.register, auth.register);
 app.post("/login", middleware.login, auth.login);
 /**
  * @returns {Response Error} - if any of the parameters is missing.
- * @example {
- * 				error: "parameter",
- * 				field: <parameter.name>,
- * 				info: "missing"
- * 			}
+ * @example
+ * 		{
+ *			status: "Bad Request",
+ *			code: 400,
+ *			messages: ["information is incomplete or malformed"],
+ *			data: {},
+ *			error: {
+ *				status: 400,
+ *				error: "FIELDS_MISSING_ERROR",
+ *				description: "One or more fields raised errors.",
+ *				fields: <missing_inputs>
+ *			}
+ *		}
  *
  * @returns {Response Error} - if any of the parameters is empty.
- * @example {
- * 				error: "parameter",
- * 				field: <name>,
- * 				info: "empty"
- * 			}
+ * @example
+ * 		{
+ *			status: "Bad Request",
+ *			code: 400,
+ *			messages: ["information is incomplete or malformed"],
+ *			data: {},
+ *			error: {
+ *				status: 400,
+ *				error: "FIELDS_EMPTY_ERROR",
+ *				description: "One or more fields raised errors.",
+ *				fields: <empty_inputs>
+ *			}
+ *		}
  *
  * @returns {Response Error} - if the value passed under the email param is faulty.
- * @example {
- * 				error: "parameter",
- * 				field: "email",
- * 				info: "incorrect email"
- * 			}
+ * @example
+ * 		{
+ *			status: "Bad Request",
+ *			code: 422,
+ *			messages: ["information is okay, but invalid"],
+ *			data: {},
+ *			error: {
+ *				status: 422,
+ *				error: "FIELDS_VALIDATION_ERROR",
+ *				description: "One or more fields raised validation errors.",
+ *				fields: <invalid_inputs>
+ *			}
+ *		}
  *
  * @returns {Response Error} - if no user with the given credentials was found.
- * @example {
- * 				error: "user",
- * 				info: "no_match"
- * 			}
+ * @example
+ *		{
+ *			status: "Not Found",
+ *			code: 404,
+ *			messages: ["resource not found"],
+ *			data: {},
+ *			error: {
+ *				status: 404,
+ *				error: "RESOURCE_NOT_FOUND_ERROR",
+ *				description:
+ *					"And error was rased when trying to access a resource which does not exists.",
+ *				fields: {}
+ *			}
+ *		}
  *
  * @returns {Response Error} - if the user is not activated (not confirmed).
- * @example {
- * 				error: "user",
- * 				info: "not activated"
- * 			}
+ * @example
+ * 		{
+ *			status: "Forbidden",
+ *			code: 403,
+ *			messages: ["action not allowed"],
+ *			data: {},
+ *			error: {
+ *				status: 403,
+ *				error: "ACTION_NOT_ALLOWED_ERROR",
+ *				description:
+ *					"And error was rased when trying to take action on a un-authorized resource.",
+ *				fields: {}
+ *		}
  *
  * @returns {Response Error} - if there was problem de-hashing the password from the database.
- * @example {
- * 				error: "password",
- * 				info: "de-hash"
- * 			}
+ * @example
+ *		{
+ *			status: "Internal Server Error",
+ *			code: 500,
+ *			messages: ["server error"],
+ *			data: {},
+ *			error: {
+ *				status: 500,
+ *				error: "SERVER_ERROR",
+ *				description:
+ *					"And error was rased when trying to de-hash password.",
+ *				fields: {}
+ *			}
+ *		}
  *
  * @returns {Response Error} - if the password provided does not match.
- * @example {
- * 				error: "user",
- * 				info: "incorrect password"
- * 			}
+ * @example
+ *		{
+ *			status: "Bad Request",
+ *			code: 422,
+ *			messages: ["information is okay, but invalid"],
+ *			data: {},
+ *			error: {
+ *				status: 422,
+ *				error: "FIELDS_VALIDATION_ERROR",
+ *				description: "credentials not correct",
+ *				fields: {}
+ *			}
+ *		}
  *
  * @returns {Response Error} - if there was problem signing the JWT token.
- * @example {
- * 				error: "JWT",
- * 				info: "sign"
- * 			}
+ * @example
+ *		{
+ *			status: "Internal Server Error",
+ *			code: 500,
+ *			messages: ["server error"],
+ *			data: {},
+ *			error: {
+ *				status: 500,
+ *				error: "SERVER_ERROR",
+ *				description:
+ *					"And error was rased when trying to sign token.",
+ *				fields: {}
+ *			}
+ *		}
  *
  * @returns {Response Success} - user is logged.
- * @example {
- * 				token: <token>
- * 			}
+ * @example
+ *		{
+ *			status: "ok",
+ *			code: 200,
+ *			messages: [],
+ *			data: {
+ *				token: <token>
+ *			},
+ *			error: {}
+ *		}
  */
 
 /*
@@ -194,21 +332,44 @@ app.post("/login", middleware.login, auth.login);
 app.post("/verify", middleware.verifyToken, auth.verify);
 /**
  * @returns {Response Error} - if no token is found in the request.
- * @example {
- * 				error: "header",
- * 				info: "no token found"
- * 			}
+ * @example
+ * 		{
+ *			status: "Unauthorized",
+ *			code: 401,
+ *			messages: ["access token isn’t provided, or is invalid"],
+ *			data: {},
+ *			error: {
+ *				status: 401,
+ *				error: "AUTHENTICATION_ERROR",
+ *				description:
+ *					"And error was rased when trying to get the authentication header.",
+ *			fields: {}
+ *		}
  *
  * @returns {Response Error} - if there was problems with verifying the token.
- * @example {
- * 				error: "JWT",
- * 				info: "verification"
- * 			}
+ * @example
+ * 		{
+ *			status: "Internal Server Error",
+ *			code: 500,
+ *			messages: ["server error"],
+ *			data: {},
+ *			error: {
+ *				status: 500,
+ *				error: "SERVER_ERROR",
+ *				description:
+ *					"And error was rased when trying to verify token.",
+ *				fields: {}
+ *		}
  *
  * @returns {Response Success} - returns all the data which is in the token.
- * @example {
- * 				data: <token_data>
- * 			}
+ * @example
+ * 		{
+ *			status: "ok",
+ *			code: 200,
+ *			messages: [],
+ *			data: token_data,
+ *			error: {}
+ *		}
  */
 
 /*
@@ -222,36 +383,76 @@ app.post("/verify", middleware.verifyToken, auth.verify);
 app.post("/activate", middleware.activate, auth.activate);
 /**
  * @returns {Response Error} - if any of the parameters is missing.
- * @example {
- * 				error: "parameter",
- * 				field: <parameter.name>,
- * 				info: "missing"
- * 			}
+ * @example
+ * 		{
+ *			status: "Bad Request",
+ *			code: 400,
+ *			messages: ["information is incomplete or malformed"],
+ *			data: {},
+ *			error: {
+ *				status: 400,
+ *				error: "FIELDS_MISSING_ERROR",
+ *				description: "One or more fields raised errors.",
+ *				fields: <missing_inputs>
+ *			}
+ *		}
  *
  * @returns {Response Error} - if any of the parameters is empty.
- * @example {
- * 				error: "parameter",
- * 				field: <name>,
- * 				info: "empty"
- * 			}
+ * @example
+ * 		{
+ *			status: "Bad Request",
+ *			code: 400,
+ *			messages: ["information is incomplete or malformed"],
+ *			data: {},
+ *			error: {
+ *				status: 400,
+ *				error: "FIELDS_EMPTY_ERROR",
+ *				description: "One or more fields raised errors.",
+ *				fields: <empty_inputs>
+ *			}
+ *		}
  *
  * @returns {Response Error} - if an invalid activation code was passed.
- * @example {
- * 				error: "activation_code",
- * 				info: "invalid"
- * 			}
+ * @example
+ * 		{
+ *			status: "Bad Request",
+ *			code: 422,
+ *			messages: ["information is okay, but invalid"],
+ *			data: {},
+ *			error: {
+ *				status: 422,
+ *				error: "FIELDS_VALIDATION_ERROR",
+ *				description: "One or more fields raised validation errors.",
+ *				fields: { activation_code: "Invalid activation code" }
+ *		}
  *
  * @returns {Response Error} - if the user associated with the activation code is already activated (impossible to get,
  * 							   because the activation is destroyed after the user is activated).
- * @example {
- * 				error: "user",
- * 				info: "activated"
- * 			}
+ * @example
+ * 		{
+ *			status: "Gone",
+ *			code: 410,
+ *			messages: [
+ *				"information is okay, but requested resource is gone"
+ *			],
+ *			data: {},
+ *			error: {
+ *				status: 410,
+ *				error: "USER_ERROR",
+ *				description: "User is already activated.",
+ *				fields: {}
+ *		}
+ *}
  *
  * @returns {Response Success} - if everything proceeds as it should.
- * @example {
- * 				activated: true
- * 			}
+ * @example
+ * 		{
+ *			status: "No Content",
+ *			code: 204,
+ *			messages: ["user successfully activated"],
+ *			data: {},
+ *			error: {}
+ *		}
  */
 
 /*
@@ -266,40 +467,92 @@ app.post("/activate", middleware.activate, auth.activate);
 app.post("/password/link", middleware.resetPasswordNew, auth.link);
 /**
  * @returns {Response Error} - if any of the parameters is missing.
- * @example {
- * 				error: "parameter",
- * 				field: <parameter.name>,
- * 				info: "missing"
- * 			}
+ * @example
+ * 		{
+ *			status: "Bad Request",
+ *			code: 400,
+ *			messages: ["information is incomplete or malformed"],
+ *			data: {},
+ *			error: {
+ *				status: 400,
+ *				error: "FIELDS_MISSING_ERROR",
+ *				description: "One or more fields raised errors.",
+ *				fields: <missing_inputs>
+ *			}
+ *		}
  *
  * @returns {Response Error} - if any of the parameters is empty.
- * @example {
- * 				error: "parameter",
- * 				field: <name>,
- * 				info: "empty"
- * 			}
+ * @example
+ * 		{
+ *			status: "Bad Request",
+ *			code: 400,
+ *			messages: ["information is incomplete or malformed"],
+ *			data: {},
+ *			error: {
+ *				status: 400,
+ *				error: "FIELDS_EMPTY_ERROR",
+ *				description: "One or more fields raised errors.",
+ *				fields: <empty_inputs>
+ *			}
+ *		}
  *
- * @returns {Response Error} - if the user either does not exist or its not activated.
- * @example {
- * 				error: "user",
- * 				info:
- * 					{
- * 						case_1: "!exists",
- * 						case_2: "!activated"
- * 					}
- * 			}
+ * @returns {Response Error} - if the user either does not exist.
+ * @example
+ * 		{
+ *			status: "Not Found",
+ *			code: 404,
+ *			messages: ["resource not found"],
+ *			data: {},
+ *			error: {
+ *				status: 404,
+ *				error: "RESOURCE_NOT_FOUND_ERROR",
+ *				description:
+ *					"And error was rased when trying to access a resource which does not exists.",
+ *				fields: {}
+ *		}
+ *
+ * @returns {Response Error} - if the user either does exist but not activated.
+ * @example
+ * 		{
+ *			status: "Forbidden",
+ *			code: 403,
+ *			messages: ["action not allowed"],
+ *			data: {},
+ *			error: {
+ *				status: 403,
+ *				error: "ACTION_NOT_ALLOWED_ERROR",
+ *				description:
+ *					"And error was rased when trying to take action on a un-authorized resource.",
+ *				fields: {}
+ *		}
  *
  * @returns {Response Error} - if there are any problems generating the reset code.
- * @example {
- * 				error: "reset_code",
- * 				info: "generation"
- * 			}
+ * @example
+ * 		{
+ *			status: "Internal Server Error",
+ *			code: 500,
+ *			messages: ["server error"],
+ *			data: {},
+ *			error: {
+ *				status: 500,
+ *				error: "SERVER_ERROR",
+ *				description:
+ *					"And error was rased when trying to generate reset code.",
+ *				fields: {}
+ *		}
  *
  * @returns {Response Success} - all the data which is in the token.
- * @example {
- * 				user_email: <email>,
- * 				register_link: <link>
- * 			}
+ * @example
+ * 		{
+ *			status: "ok",
+ *			code: 200,
+ *			messages: [],
+ *			data: {
+ *				user_email: <user_email>,
+ *				register_link:<register_link>
+ *			},
+ *			error: {}
+ *		}
  */
 
 /*
@@ -315,47 +568,113 @@ app.post("/password/link", middleware.resetPasswordNew, auth.link);
 app.post("/password/reset", middleware.resetPassword, auth.reset);
 /**
  * @returns {Response Error} - if any of the parameters is missing.
- * @example {
- * 				error: "parameter",
- * 				field: <parameter.name>,
- * 				info: "missing"
- * 			}
+ * @example
+ * 		{
+ *			status: "Bad Request",
+ *			code: 400,
+ *			messages: ["information is incomplete or malformed"],
+ *			data: {},
+ *			error: {
+ *				status: 400,
+ *				error: "FIELDS_MISSING_ERROR",
+ *				description: "One or more fields raised errors.",
+ *				fields: <missing_inputs>
+ *			}
+ *		}
  *
  * @returns {Response Error} - if any of the parameters is empty.
- * @example {
- * 				error: "parameter",
- * 				field: <name>,
- * 				info: "empty"
- * 			}
+ * @example
+ * 		{
+ *			status: "Bad Request",
+ *			code: 400,
+ *			messages: ["information is incomplete or malformed"],
+ *			data: {},
+ *			error: {
+ *				status: 400,
+ *				error: "FIELDS_EMPTY_ERROR",
+ *				description: "One or more fields raised errors.",
+ *				fields: <empty_inputs>
+ *			}
+ *		}
  *
  * @returns {Response Error} - if the @param new_password does NOT match with the @param new_password_confirm .
- * @example {
- * 				error: "password",
- * 				info: "no match"
- * 			}
+ * @example
+ *		{
+ *			status: "Bad Request",
+ *			code: 400,
+ *			messages: ["information is incomplete or malformed"],
+ *			data: {},
+ *			error: {
+ *				status: 400,
+ *				error: "FIELDS_VALIDATION_ERROR",
+ *				description:
+ *					"And error was rased when trying to match the new_password and the new_password_confirm.",
+ *				fields: {
+ *					new_password:
+ *						"Does not match with new_password_confirm.",
+ *					new_password_confirm:
+ *						"Does not match with new_password."
+ *				}
+ *			}
+ *		}
  *
  * @returns {Response Error} - if there was a problem generating the salt used for hashing the @param new_password .
- * @example {
- * 				error: "encrypting",
- * 				info: "generating salt"
- * 			}
+ * @example
+ * 		{
+ *			status: "Internal Server Error",
+ *			code: 500,
+ *			messages: ["server error"],
+ *			data: {},
+ *			error: {
+ *				status: 500,
+ *				error: "SERVER_ERROR",
+ *				description:
+ *					"And error was rased when trying to generate salt for the hashing of the password.",
+ *				fields: {}
+ *			}
+ *		}
  *
  * @returns {Response Error} - if there was a problem generating the hash of the @param new_password .
- * @example {
- * 				error: "encrypting",
- * 				info: "generating hash"
- * 			}
+ * @example
+ * 		{
+ *			status: "Internal Server Error",
+ *			code: 500,
+ *			messages: ["server error"],
+ *			data: {},
+ *			error: {
+ *				status: 500,
+ *				error: "SERVER_ERROR",
+ *				description:
+ *					"And error was rased when trying to hash the password.",
+ *				fields: {}
+ *			}
+ *		}
  *
  * @returns {Response Error} - if @param reset_code is incorrect.
- * @example {
- * 				error: "reset_code",
- * 				info: "!exists"
- * 			}
+ * @example
+ * 		{
+ *			status: "Not Found",
+ *			code: 404,
+ *			messages: ["resource not found"],
+ *			data: {},
+ *			error: {
+ *				status: 404,
+ *				error: "RESOURCE_NOT_FOUND_ERROR",
+ *				description:
+ *					"And error was rased when trying to access a resource which does not exists.",
+ *				fields: {}
+ *			}
+ *		}
  *
  * @returns {Response Success} - when everything proceeded correctly.
- * @example {
- *				reset: true
- * 			}
+ * @example
+ * 		{
+ *			status: "No Content",
+ *			code: 204,
+ *			messages: ["password reset"],
+ *			data: {},
+ *			error: {}
+ *		}
  */
 
 app.listen(5001, () => {
