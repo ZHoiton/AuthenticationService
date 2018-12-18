@@ -47,7 +47,7 @@ function register(request, response) {
 						data: {},
 						error: {
 							status: 500,
-							error: "ACTIVATION_CODE_ERROR",
+							error: "SERVER_ERROR",
 							description:
 								"And error was rased when trying to generate activation code.",
 							fields: {}

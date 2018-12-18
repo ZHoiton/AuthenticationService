@@ -48,7 +48,7 @@ function register(request, response, next) {
 					data: {},
 					error: {
 						status: 500,
-						error: "PASSWORD_ENCRYPTION_ERROR",
+						error: "SERVER_ERROR",
 						description: "And error was rased when trying to generate salt for the hashing of the password.",
 						fields: {}
 					}
@@ -66,7 +66,7 @@ function register(request, response, next) {
 							data: {},
 							error: {
 								status: 500,
-								error: "PASSWORD_ENCRYPTION_ERROR",
+								error: "SERVER_ERROR",
 								description: "And error was rased when trying to hash the password.",
 								fields: {}
 							}

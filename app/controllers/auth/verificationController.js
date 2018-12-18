@@ -14,7 +14,7 @@ function verify(request, response, key) {
 				data: {},
 				error: {
 					status: 500,
-					error: "TOKEN_ERROR",
+					error: "SERVER_ERROR",
 					description:
 						"And error was rased when trying to verify token.",
 					fields: {}

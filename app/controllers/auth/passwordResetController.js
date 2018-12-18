@@ -10,33 +10,74 @@ module.exports = {
 
 function link(request, response) {
 	Users.findOne({
-		where: { email: request.body.email, activated: true }
+		where: { email: request.body.email }
 	}).then(user => {
 		// project will be the first entry of the Projects table with the title 'aProject' || null
 		if (user !== null) {
-			Resets.create({
-				user_id: user.id,
-				reset_code: key_generator.generateToken()
-			}).then(reset => {
-				if (reset !== null) {
-					// returning the reset code if everything went as planed
-					response.json({
-						user_email: user.email,
-						register_link:
-							request.body.register_link +
-							"?reset_code=" +
-							reset.reset_code
-					});
-				} else {
-					response
-						.status(400)
-						.send({ error: "reset_code", info: "generation" });
-				}
-			});
+			if (user.activated) {
+				Resets.create({
+					user_id: user.id,
+					reset_code: key_generator.generateToken()
+				}).then(reset => {
+					if (reset !== null) {
+						// returning the reset code if everything went as planed
+						response.status(200).send({
+							status: "ok",
+							code: 200,
+							messages: [],
+							data: {
+								user_email: user.email,
+								register_link:
+									request.body.register_link +
+									"?reset_code=" +
+									reset.reset_code
+							},
+							error: {}
+						});
+					} else {
+						response.status(500).send({
+							status: "Internal Server Error",
+							code: 500,
+							messages: ["server error"],
+							data: {},
+							error: {
+								status: 500,
+								error: "SERVER_ERROR",
+								description:
+									"And error was rased when trying to generate reset code.",
+								fields: {}
+							}
+						});
+					}
+				});
+			} else {
+				response.status(403).send({
+					status: "Forbidden",
+					code: 403,
+					messages: ["action not allowed"],
+					data: {},
+					error: {
+						status: 403,
+						error: "ACTION_NOT_ALLOWED_ERROR",
+						description:
+							"And error was rased when trying to take action on a un-authorized resource.",
+						fields: {}
+					}
+				});
+			}
 		} else {
-			response.status(400).send({
-				error: "user",
-				info: { case_1: "!exists", case_2: "!activated" }
+			response.status(404).send({
+				status: "Not Found",
+				code: 404,
+				messages: ["resource not found"],
+				data: {},
+				error: {
+					status: 404,
+					error: "RESOURCE_NOT_FOUND_ERROR",
+					description:
+						"And error was rased when trying to access a resource which does not exists.",
+					fields: {}
+				}
 			});
 		}
 	});
@@ -57,14 +98,30 @@ function reset(request, response) {
 							reset_code: request.query.reset_code
 						}
 					}).then(() => {
-						response.json({
-							reset: true
+						response.status(204).send({
+							status: "No Content",
+							code: 204,
+							messages: ["password reset"],
+							data: {},
+							error: {}
 						});
 					});
 				});
 			});
 		} else {
-			response.status(400).send({ error: "reset_code", info: "!exists" });
+			response.status(404).send({
+				status: "Not Found",
+				code: 404,
+				messages: ["resource not found"],
+				data: {},
+				error: {
+					status: 404,
+					error: "RESOURCE_NOT_FOUND_ERROR",
+					description:
+						"And error was rased when trying to access a resource which does not exists.",
+					fields: {}
+				}
+			});
 		}
 	});
 }
