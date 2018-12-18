@@ -21,26 +21,53 @@ function register(request, response) {
 				user_id: user.get().id,
 				activation_code: key_generator.generateToken()
 			}).then(activation => {
-				if (activation !== null) {
+				if (
+					activation !== null &&
+					activation.activation_code !== null
+				) {
 					// returning the code if everything went as planed
-					response.json({
-						user_email: user.email,
-						activation_link:
-							request.body.activation_link +
-							"?activation_code=" +
-							activation.activation_code
+					response.status(200).send({
+						status: "ok",
+						code: 200,
+						messages: [],
+						data: {
+							user_email: user.email,
+							activation_link:
+								request.body.activation_link +
+								"?activation_code=" +
+								activation.activation_code
+						},
+						error: {}
 					});
 				} else {
-					response.status(400).send({
-						error: "activation_code",
-						info: "Could not generate."
+					response.status(500).send({
+						status: "Internal Server Error",
+						code: 500,
+						messages: ["server error"],
+						data: {},
+						error: {
+							status: 500,
+							error: "ACTIVATION_CODE_ERROR",
+							description:
+								"And error was rased when trying to generate activation code.",
+							fields: {}
+						}
 					});
 				}
 			});
 		} else {
-			response.status(400).send({
-				error: "user",
-				info: "exists"
+			response.status(409).send({
+				status: "Conflict",
+				code: 409,
+				messages: ["resource already exists"],
+				data: {},
+				error: {
+					status: 409,
+					error: "RESOURCE_EXISTS_ERROR",
+					description:
+						"And error was rased when trying to create a resource which already exists.",
+					fields: {}
+				}
 			});
 		}
 	});

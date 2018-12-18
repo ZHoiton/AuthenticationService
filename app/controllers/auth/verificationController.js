@@ -7,10 +7,26 @@ module.exports = {
 function verify(request, response, key) {
 	jwt.verify(request.token, key, (error, token_data) => {
 		if (error) {
-			response.status(400).send({ error: "JWT", info: "verification" });
+			response.status(500).send({
+				status: "Internal Server Error",
+				code: 500,
+				messages: ["server error"],
+				data: {},
+				error: {
+					status: 500,
+					error: "TOKEN_ERROR",
+					description:
+						"And error was rased when trying to verify token.",
+					fields: {}
+				}
+			});
 		} else {
-			response.json({
-				data: token_data
+			response.status(200).send({
+				status: "ok",
+				code: 200,
+				messages: [],
+				data: token_data,
+				error: {}
 			});
 		}
 	});

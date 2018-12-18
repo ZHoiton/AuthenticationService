@@ -32,7 +32,7 @@ function verifyToken(request, response, next) {
 			data: {},
 			error: {
 				status: 401,
-				error: "AUTHENTICATION_HEADER_ERROR",
+				error: "AUTHENTICATION_ERROR",
 				description:
 					"And error was rased when trying to get the authentication header.",
 				fields: {}
