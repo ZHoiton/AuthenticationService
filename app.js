@@ -47,6 +47,7 @@ app.use(express.static("public"));
 // 		422 for when the requested information is okay, but invalid.
 // 		404 for when everything is okay, but the resource doesn’t exist.
 // 		409 for when a conflict of data exists, even with valid information.
+//		410 for when a resource  is no longer available and will not be available again.
 // for Auth Errors
 // 		401 for when an access token isn’t provided, or is invalid.
 // 		403 for when an access token is valid, but requires more privileges.
