@@ -84,7 +84,7 @@ function areInputsPresent(request, response, inputs) {
 			data: {},
 			error: {
 				status: 400,
-				error: "FIELDS_MISSING_ERROR",
+				error: "REQUEST_VALIDATION_ERROR",
 				description: "One or more fields raised errors.",
 				fields: missing_input
 			}
@@ -114,7 +114,7 @@ function areInputsFilled(request, response, inputs) {
 			data: {},
 			error: {
 				status: 400,
-				error: "FIELDS_EMPTY_ERROR",
+				error: "REQUEST_VALIDATION_ERROR",
 				description: "One or more fields raised errors.",
 				fields: empty_input
 			}
