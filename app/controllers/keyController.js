@@ -1,15 +1,6 @@
-module.exports = {
-	getKey,
-	generate,
-	generateToken
-};
-
 let global_key = "";
 generate(250, true);
 
-function getKey() {
-	return global_key;
-}
 
 /**
  * generating new secret key to sign all the tokens with
@@ -41,3 +32,8 @@ function generateToken() {
 	}
 	return key + date;
 }
+module.exports = {
+	global_key,
+	generate,
+	generateToken
+};

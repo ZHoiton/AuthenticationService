@@ -1,9 +1,12 @@
-const registerController = require("./auth/registerController");
-const loginController = require("./auth/loginController");
-const passwordRestController = require("./auth/passwordResetController");
-const activationController = require("./auth/activationController");
-const verificationController = require("./auth/verificationController");
-const key_generator = require("./keyController");
+const { register } = require("./auth/registerController");
+const { login } = require("./auth/loginController");
+const { verify } = require("./auth/verificationController");
+const { link, reset } = require("./auth/passwordResetController");
+const { activate } = require("./auth/activationController");
+const {
+	createInvitation,
+	activateAccount
+} = require("./auth/invitationController");
 
 module.exports = {
 	register,
@@ -11,24 +14,7 @@ module.exports = {
 	verify,
 	activate,
 	link,
-    reset,
+	reset,
+	invite: createInvitation,
+	activateInvite: activateAccount
 };
-
-function register(request, response) {
-	return registerController.register(request, response);
-}
-function login(request, response) {
-	return loginController.login(request, response, key_generator.getKey());
-}
-function verify(request, response) {
-	return verificationController.verify(request, response, key_generator.getKey());
-}
-function activate(request, response) {
-	return activationController.activate(request, response);
-}
-function link(request, response) {
-	return passwordRestController.link(request, response);
-}
-function reset(request, response) {
-	return passwordRestController.reset(request, response);
-}

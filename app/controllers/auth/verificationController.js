@@ -1,11 +1,9 @@
 const jwt = require("jsonwebtoken");
+const { global_key } = require("../keyController");
 
-module.exports = {
-	verify
-};
-
-function verify(request, response, key) {
-	jwt.verify(request.token, key, (error, token_data) => {
+function verify(request, response) {
+	
+	jwt.verify(request.token, global_key, (error, token_data) => {
 		if (error) {
 			response.status(500).send({
 				status: "Internal Server Error",
@@ -31,3 +29,8 @@ function verify(request, response, key) {
 		}
 	});
 }
+
+
+module.exports = {
+	verify
+};

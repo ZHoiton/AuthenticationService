@@ -2,12 +2,13 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const db = require("./../../../database/database");
 const Users = new db.models.Users();
+const { global_key } = require("../keyController");
 
 module.exports = {
 	login
 };
 
-function login(request, response, key) {
+function login(request, response) {
 	Users.findOne({ where: { email: request.body.email } }).then(user => {
 		if (user !== null) {
 			if (user.activated) {
@@ -33,36 +34,42 @@ function login(request, response, key) {
 						if (result_hash) {
 							//deleting the following keys because could not find in the
 							//documentation how to exclude them in the return object from the db
+							user.get().auth_id = user.get().id;
+							delete user.get().id;
 							delete user.get().password;
 							delete user.get().activated;
-
-							jwt.sign({ user: user }, key, (error, token) => {
-								if (error) {
-									response.status(500).send({
-										status: "Internal Server Error",
-										code: 500,
-										messages: ["server error"],
-										data: {},
-										error: {
-											status: 500,
-											error: "SERVER_ERROR",
-											description:
-												"And error was rased when trying to sign token.",
-											fields: {}
-										}
-									});
-								} else {
-									response.status(200).send({
-										status: "ok",
-										code: 200,
-										messages: [],
-										data: {
-											token: token
-										},
-										error: {}
-									});
+							
+							jwt.sign(
+								{ user: user },
+								global_key,
+								(error, token) => {
+									if (error) {
+										response.status(500).send({
+											status: "Internal Server Error",
+											code: 500,
+											messages: ["server error"],
+											data: {},
+											error: {
+												status: 500,
+												error: "SERVER_ERROR",
+												description:
+													"And error was rased when trying to sign token.",
+												fields: {}
+											}
+										});
+									} else {
+										response.status(200).send({
+											status: "ok",
+											code: 200,
+											messages: [],
+											data: {
+												token: token
+											},
+											error: {}
+										});
+									}
 								}
-							});
+							);
 						} else {
 							response.status(422).send({
 								status: "Bad Request",

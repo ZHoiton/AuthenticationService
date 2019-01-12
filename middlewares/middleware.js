@@ -3,6 +3,7 @@ const loginMiddleware = require("./loginMiddleware");
 const verifyTokenMiddleware = require("./verifyTokenMiddleware");
 const activationMiddleware = require("./activationMiddleware");
 const resetPasswordMiddleware = require("./resetPasswordMiddleware");
+const inviteMiddleware = require("./invitationMiddleware");
 
 module.exports = {
 	register: registerMiddleware.register,
@@ -10,5 +11,7 @@ module.exports = {
 	verifyToken: verifyTokenMiddleware.verifyToken,
 	activate: activationMiddleware.activate,
 	resetPasswordNew: resetPasswordMiddleware.newPassword,
-	resetPassword: resetPasswordMiddleware.resetPassword
+	resetPassword: resetPasswordMiddleware.resetPassword,
+	createInvite: inviteMiddleware.registerInvite,
+	activateAccount: inviteMiddleware.activateAccount
 };

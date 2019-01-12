@@ -677,6 +677,29 @@ app.post("/password/reset", middleware.resetPassword, auth.reset);
  *		}
  */
 
+ 
+/*
+|================================================================
+| Invite creation route
+|================================================================
+*/
+/**
+ * @param {Request Body} email                  - the email of the new user.
+ * @param {Request Body} invite_activation_link - the link to where the user needs to be taken to register.
+ */
+app.post("/invite/create", middleware.createInvite, auth.invite);
+
+/*
+|================================================================
+| Invite activation route
+|================================================================
+*/
+/**
+ * @param {Request Body} password    - the new password the user will be using.
+ * @param {Request Body} invite_code - the invite code associated with the user taken from the '/invite/create' response.
+ */
+app.post("/invite/activate", middleware.activateAccount, auth.activateInvite);
+
 app.listen(5001, () => {
 	console.log("Auth service running...");
 });

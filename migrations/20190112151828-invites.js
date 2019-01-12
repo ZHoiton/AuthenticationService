@@ -16,21 +16,25 @@ exports.setup = function(options, seedLink) {
 
 exports.up = function(db) {
 	return db
-		.createTable("users", {
+		.createTable("invites", {
 			id: { type: "int", primaryKey: true, autoIncrement: true },
+			invite_code: "string",
 			email: "string",
-			password: "string",
-			activated: "boolean",
 			createdAt: "timestamp",
 			updatedAt: "timestamp"
 		})
 		.then(() => {
-			db.addIndex("users", "users_table_email_index", ["email"], false);
+			db.addIndex(
+				"invites",
+				"invites_table_invite_code_index",
+				["invite_code"],
+				false
+			);
 		});
 };
 
 exports.down = function(db) {
-	return db.dropTable("users");
+	return db.dropTable("invites");
 };
 
 exports._meta = {
