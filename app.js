@@ -77,7 +77,7 @@ app.post("/register", middleware.register, auth.register);
  *			data: {},
  *			error: {
  *				status: 400,
- *				error: "FIELDS_MISSING_ERROR",
+ *				error: "REQUEST_VALIDATION_ERROR",
  *				description: "One or more fields raised errors.",
  *				fields: <missing_inputs>
  *			}
@@ -92,7 +92,7 @@ app.post("/register", middleware.register, auth.register);
  *			data: {},
  *			error: {
  *				status: 400,
- *				error: "FIELDS_EMPTY_ERROR",
+ *				error: "REQUEST_VALIDATION_ERROR",
  *				description: "One or more fields raised errors.",
  *				fields: <empty_inputs>
  *			}
@@ -194,7 +194,7 @@ app.post("/login", middleware.login, auth.login);
  *			data: {},
  *			error: {
  *				status: 400,
- *				error: "FIELDS_MISSING_ERROR",
+ *				error: "REQUEST_VALIDATION_ERROR",
  *				description: "One or more fields raised errors.",
  *				fields: <missing_inputs>
  *			}
@@ -209,7 +209,7 @@ app.post("/login", middleware.login, auth.login);
  *			data: {},
  *			error: {
  *				status: 400,
- *				error: "FIELDS_EMPTY_ERROR",
+ *				error: "REQUEST_VALIDATION_ERROR",
  *				description: "One or more fields raised errors.",
  *				fields: <empty_inputs>
  *			}
@@ -391,7 +391,7 @@ app.post("/activate", middleware.activate, auth.activate);
  *			data: {},
  *			error: {
  *				status: 400,
- *				error: "FIELDS_MISSING_ERROR",
+ *				error: "REQUEST_VALIDATION_ERROR",
  *				description: "One or more fields raised errors.",
  *				fields: <missing_inputs>
  *			}
@@ -406,7 +406,7 @@ app.post("/activate", middleware.activate, auth.activate);
  *			data: {},
  *			error: {
  *				status: 400,
- *				error: "FIELDS_EMPTY_ERROR",
+ *				error: "REQUEST_VALIDATION_ERROR",
  *				description: "One or more fields raised errors.",
  *				fields: <empty_inputs>
  *			}
@@ -475,7 +475,7 @@ app.post("/password/link", middleware.resetPasswordNew, auth.link);
  *			data: {},
  *			error: {
  *				status: 400,
- *				error: "FIELDS_MISSING_ERROR",
+ *				error: "REQUEST_VALIDATION_ERROR",
  *				description: "One or more fields raised errors.",
  *				fields: <missing_inputs>
  *			}
@@ -490,7 +490,7 @@ app.post("/password/link", middleware.resetPasswordNew, auth.link);
  *			data: {},
  *			error: {
  *				status: 400,
- *				error: "FIELDS_EMPTY_ERROR",
+ *				error: "REQUEST_VALIDATION_ERROR",
  *				description: "One or more fields raised errors.",
  *				fields: <empty_inputs>
  *			}
@@ -576,7 +576,7 @@ app.post("/password/reset", middleware.resetPassword, auth.reset);
  *			data: {},
  *			error: {
  *				status: 400,
- *				error: "FIELDS_MISSING_ERROR",
+ *				error: "REQUEST_VALIDATION_ERROR",
  *				description: "One or more fields raised errors.",
  *				fields: <missing_inputs>
  *			}
@@ -591,7 +591,7 @@ app.post("/password/reset", middleware.resetPassword, auth.reset);
  *			data: {},
  *			error: {
  *				status: 400,
- *				error: "FIELDS_EMPTY_ERROR",
+ *				error: "REQUEST_VALIDATION_ERROR",
  *				description: "One or more fields raised errors.",
  *				fields: <empty_inputs>
  *			}
