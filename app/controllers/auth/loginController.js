@@ -34,11 +34,12 @@ function login(request, response) {
 						if (result_hash) {
 							//deleting the following keys because could not find in the
 							//documentation how to exclude them in the return object from the db
+							const auth_id = user.get().id;
 							user.get().auth_id = user.get().id;
 							delete user.get().id;
 							delete user.get().password;
 							delete user.get().activated;
-							
+
 							jwt.sign(
 								{ user: user },
 								global_key,
@@ -63,7 +64,8 @@ function login(request, response) {
 											code: 200,
 											messages: [],
 											data: {
-												token: token
+												token: token,
+												auth_id
 											},
 											error: {}
 										});

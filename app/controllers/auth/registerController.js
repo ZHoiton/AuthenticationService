@@ -32,6 +32,7 @@ function register(request, response) {
 						messages: [],
 						data: {
 							user_email: user.email,
+							auth_id: user.id,
 							activation_link:
 								request.body.activation_link +
 								"?activation_code=" +

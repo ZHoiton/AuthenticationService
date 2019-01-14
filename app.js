@@ -168,6 +168,7 @@ app.post("/register", middleware.register, auth.register);
  *			messages: [],
  *			data: {
  *				user_email: user.email,
+ *				auth_id: user.id,
  *				activation_link: <activation_link>
  *			},
  *			error: {}
